@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Happy Birthday, Daddy!</title>
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:title" content="Happy Birthday, Daddy! 🎂">
+<meta property="og:description" content="A secret birthday album. Bring the secret code!">
+<meta name="theme-color" content="#d7282f">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Caveat:wght@600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1b2440;--paper:#fff9ea;--red:#d7282f;--yellow:#fbe08a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#2a1f1a;color:var(--ink);font-family:'Patrick Hand',system-ui,sans-serif;font-size:20px;display:grid;place-items:center;padding:14px;min-height:100svh}
+.album{position:relative;width:min(520px,94vw);background:var(--paper);border-radius:6px 14px 14px 6px;border-left:14px solid #b5211f;box-shadow:0 30px 60px rgba(0,0,0,.5),inset 10px 0 18px -8px rgba(0,0,0,.35);overflow:hidden;text-align:center}
+.top{padding:22px 22px 6px}
+.series{font-family:'Bangers';letter-spacing:.3em;font-size:clamp(.95rem,3.4vw,1.2rem)}
+.title{font-family:'Bangers';font-size:clamp(3.6rem,17vw,6.4rem);line-height:.85;color:var(--red);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:5px 5px 0 var(--ink);letter-spacing:.03em;margin-top:6px}
+.by{font-family:'Caveat';font-size:1.3rem}
+.art{margin:12px 22px 0;border:3px solid var(--ink);background:linear-gradient(#7cc3ee,#bfe6fb 60%,#e7c98c 61%);padding:18px 16px 20px;background-image:radial-gradient(rgba(27,36,64,.13) 1.4px,transparent 1.6px),linear-gradient(#7cc3ee,#bfe6fb 60%,#e7c98c 61%);background-size:12px 12px,auto}
+.lock{font-size:3rem;line-height:1;animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(4deg)}}
+.art p{font-size:1.15rem;margin:6px 0 14px;background:#fff;border:3px solid var(--ink);border-radius:20px;padding:.4em .8em;display:inline-block}
+form{display:flex;flex-direction:column;gap:12px;align-items:center}
+input{font:inherit;font-size:1.25rem;width:min(320px,100%);padding:.5em .8em;border:3px solid var(--ink);border-radius:12px;background:#fff;box-shadow:4px 4px 0 var(--ink);text-align:center;outline:none}
+input:focus{box-shadow:4px 4px 0 var(--red)}
+button{font-family:'Bangers';letter-spacing:.06em;font-size:1.35rem;padding:.55em 1.3em;background:var(--red);color:#fff;border:3px solid var(--ink);border-radius:14px;box-shadow:5px 5px 0 var(--ink);cursor:pointer;transition:transform .15s}
+button:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+button:disabled{opacity:.7;cursor:wait}
+.msg{min-height:1.5em;font-size:1.1rem;margin-top:4px}
+.msg.err{color:var(--red);font-weight:bold}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+.band{background:var(--red);color:#fff;border-top:3px solid var(--ink);margin-top:18px;padding:12px 16px 14px;font-family:'Bangers';letter-spacing:.12em;font-size:1.4rem}
+</style>
+</head>
+<body>
+<div class="album" id="album">
+  <div class="top">
+    <div class="series">THE ADVENTURES OF</div>
+    <div class="title">DADDY</div>
+    <div class="by">a birthday album, made with love by your kids</div>
+  </div>
+  <div class="art">
+    <div class="lock">🔐</div>
+    <p>Top secret! Enter the code to open the album.</p>
+    <form id="f" autocomplete="off">
+      <label for="pw" style="position:absolute;left:-9999px">Secret code</label>
+      <input id="pw" type="password" placeholder="Secret code" autocapitalize="off" autocorrect="off" spellcheck="false" required>
+      <button id="go" type="submit">Unlock ✦</button>
+      <div class="msg" id="msg" aria-live="polite"></div>
+    </form>
+  </div>
+  <div class="band">THE BIRTHDAY EXPEDITION</div>
+</div>
+<script src="payload.js"></script>
+<script>
+(() => {
+  const f = document.getElementById('f'), pw = document.getElementById('pw'), go = document.getElementById('go'), msg = document.getElementById('msg'), album = document.getElementById('album');
+  const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  f.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!window.PAYLOAD || !crypto.subtle) { msg.className = 'msg err'; msg.textContent = 'Please open this link in Safari or Chrome.'; return; }
+    go.disabled = true; msg.className = 'msg'; msg.textContent = 'Decoding the secret message… 🕵️';
+    try {
+      const P = window.PAYLOAD;
+      const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw.value.trim()), 'PBKDF2', false, ['deriveKey']);
+      const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: unb64(P.salt), iterations: P.iter, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+      const html = new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(P.iv) }, key, unb64(P.ct)));
+      document.open(); document.write(html); document.close();
+    } catch (err) {
+      go.disabled = false; msg.className = 'msg err'; msg.textContent = 'Blistering barnacles! That’s not the code. Try again!';
+      album.classList.remove('shake'); void album.offsetWidth; album.classList.add('shake'); pw.select();
+    }
+  });
+})();
+</script>
+</body>
+</html>
